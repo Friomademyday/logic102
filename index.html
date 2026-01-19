@@ -7,22 +7,21 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg: #020202;
-            --accent: #ff4d4d;
-            --card-bg: rgba(20, 20, 20, 0.6);
-            --border: rgba(255, 255, 255, 0.08);
-            --text-dim: #a0a0a0;
-            --font: "Inter", -apple-system, sans-serif;
+            --bg: #000000;
+            --card-bg: #0a0a0a;
+            --netflix-red: #e50914;
+            --border: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #666666;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
             background: var(--bg);
-            background-image: radial-gradient(circle at 50% -20%, #2a0a0a 0%, #020202 80%);
-            color: #fff;
+            color: var(--text-main);
             font-family: var(--font);
             margin: 0;
-            padding: 40px 24px;
-            min-height: 100vh;
+            padding: 40px 20px 140px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -30,96 +29,93 @@
 
         h1 {
             font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            margin-bottom: 48px;
+            font-weight: 900;
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
+            margin-bottom: 40px;
+            letter-spacing: -1px;
         }
 
         .module-card {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border);
-            padding: 24px;
-            border-radius: 24px;
-            margin-bottom: 16px;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             width: 100%;
-            max-width: 450px;
-            transition: transform 0.2s ease;
+            max-width: 500px;
+            box-sizing: border-box;
         }
 
         .module-card label {
             display: block;
             color: var(--text-dim);
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 10px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
         }
 
         .module-card .data {
-            font-size: 38px;
-            font-weight: 800;
-            letter-spacing: -1px;
+            font-size: 42px;
+            font-weight: 900;
         }
 
-        .status-glow {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #00ff88;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #00ff88;
-            margin-right: 8px;
+        .protocol-text {
+            color: var(--netflix-red);
+            font-size: 26px !important;
         }
 
-        /* The Minimal Floating Dock */
-        .nav-dock {
-            position: fixed;
-            bottom: 32px;
-            background: rgba(15, 15, 15, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            padding: 10px 16px;
-            border-radius: 32px;
+        .status-container {
             display: flex;
             align-items: center;
-            gap: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            gap: 12px;
+        }
+
+        .glow-dot {
+            width: 10px;
+            height: 10px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #00ff88;
+        }
+
+        /* The 5-Icon Floating Dock from Image 1 */
+        .nav-dock {
+            position: fixed;
+            bottom: 40px;
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            padding: 10px 25px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            z-index: 1000;
         }
 
         .nav-link {
-            color: #666;
+            color: var(--text-main);
             text-decoration: none;
-            padding: 10px;
-            border-radius: 50%;
             display: flex;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link.active {
-            color: #fff;
+            align-items: center;
+            justify-content: center;
         }
 
         .nav-link.chat-main {
-            background: var(--accent);
-            color: #fff;
-            padding: 14px;
-            margin: 0 8px;
-            box-shadow: 0 8px 24px rgba(255, 77, 77, 0.3);
-        }
-
-        .nav-link:hover {
-            color: #fff;
+            background: var(--netflix-red);
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 4px solid var(--bg);
+            margin-top: -45px;
+            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3);
         }
 
         lucide-icon {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
         }
     </style>
 </head>
@@ -128,24 +124,24 @@
     <h1>Phantom Hub</h1>
 
     <div class="module-card">
-        <label>Mastery Progress</label>
+        <label>Logic Mastery</label>
         <div class="data" id="stat-progress">0%</div>
     </div>
 
     <div class="module-card">
         <label>Active Protocol</label>
-        <div class="data" style="font-size: 24px; color: var(--accent);">Python Architect</div>
+        <div class="data protocol-text">Python Architect 1.0</div>
     </div>
 
     <div class="module-card">
-        <label>System Status</label>
-        <div class="data" style="font-size: 24px; display: flex; align-items: center;">
-            <span class="status-glow"></span> ONLINE
+        <label>System Integrity</label>
+        <div class="data status-container">
+            <div class="glow-dot"></div> STABLE
         </div>
     </div>
 
     <nav class="nav-dock">
-        <a href="dashboard.html" class="nav-link active"><i data-lucide="home"></i></a>
+        <a href="dashboard.html" class="nav-link"><i data-lucide="home"></i></a>
         <a href="courses.html" class="nav-link"><i data-lucide="search"></i></a>
         <a href="ai.html" class="nav-link chat-main"><i data-lucide="message-square"></i></a>
         <a href="courses.html" class="nav-link"><i data-lucide="lightbulb"></i></a>
