@@ -116,15 +116,15 @@
             color: var(--accent);
         }
 
-        .nav-icon {
-            font-size: 24px;
+        .nav-trigger svg {
+            width: 24px;
+            height: 24px;
             margin-bottom: 6px;
-            font-weight: 300;
-        }
-
-        .tilted {
-            display: inline-block;
-            transform: rotate(45deg);
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .nav-label {
@@ -179,19 +179,19 @@
 
         <nav class="nav-bar">
             <button class="nav-trigger active" onclick="navigate('home')">
-                <span class="nav-icon">⌂</span>
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 <span class="nav-label">Home</span>
             </button>
             <button class="nav-trigger" onclick="navigate('search')">
-                <span class="nav-icon tilted">⚲</span>
+                <svg viewBox="0 0 24 24" style="transform: rotate(10deg);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span class="nav-label">Search</span>
             </button>
             <button class="nav-trigger" onclick="navigate('ai')">
-                <span class="nav-icon">💡</span>
+                <svg viewBox="0 0 24 24"><path d="M9 21h6"></path><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2v1"></path><path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>
                 <span class="nav-label">Lab</span>
             </button>
             <button class="nav-trigger" onclick="navigate('me')">
-                <span class="nav-icon">⚙</span>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 <span class="nav-label">Me</span>
             </button>
         </nav>
@@ -199,20 +199,10 @@
 
     <script>
         function navigate(targetId) {
-            document.querySelectorAll('.view-layer').forEach(layer => {
-                layer.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.nav-trigger').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
+            document.querySelectorAll('.view-layer').forEach(layer => layer.classList.remove('active'));
+            document.querySelectorAll('.nav-trigger').forEach(btn => btn.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
-            
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
-            }
-
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
             window.location.hash = targetId;
         }
 
@@ -222,11 +212,7 @@
                 const targetBtn = Array.from(document.querySelectorAll('.nav-trigger')).find(btn => 
                     btn.getAttribute('onclick').includes(hash)
                 );
-                if (targetBtn) {
-                    targetBtn.classList.add('active');
-                    document.querySelectorAll('.view-layer').forEach(l => l.classList.remove('active'));
-                    document.getElementById(hash).classList.add('active');
-                }
+                if (targetBtn) targetBtn.click();
             }
         });
     </script>
