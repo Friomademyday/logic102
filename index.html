@@ -148,6 +148,36 @@
             width: 0%;
             transition: width 0.5s ease;
         }
+
+        input[type="text"] {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            color: #fff;
+            border-radius: 15px;
+            padding: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+            font-family: var(--font);
+        }
+
+        .ai-chat-bubble {
+            padding: 20px;
+            line-height: 1.6;
+            font-size: 15px;
+            color: #ccc;
+        }
+
+        code {
+            display: block;
+            background: #111;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            color: var(--accent);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -191,8 +221,15 @@
             <section id="ai" class="view-layer">
                 <h1>Lab</h1>
                 <div class="module-card">
-                    <label>Status: Online</label>
-                    <div style="color:#888; line-height:1.6; font-size:15px;">Awaiting logic input for complex decompression...</div>
+                    <label id="lab-node-status">System: Idle</label>
+                    <div id="ai-response" class="ai-chat-bubble">Awaiting logic input for complex decompression...</div>
+                </div>
+                <div id="quiz-container" style="display:none; width: 100%;">
+                    <div class="module-card">
+                        <label>Logic Check</label>
+                        <div id="quiz-question" style="margin-bottom: 20px; color:#fff;"></div>
+                        <input type="text" id="quiz-input" placeholder="Enter logic output...">
+                    </div>
                 </div>
             </section>
 
@@ -232,7 +269,13 @@
             document.querySelectorAll('.view-layer').forEach(layer => layer.classList.remove('active'));
             document.querySelectorAll('.nav-trigger').forEach(btn => btn.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+            
+            const triggers = document.querySelectorAll('.nav-trigger');
+            if (targetId === 'home') triggers[0].classList.add('active');
+            if (targetId === 'search') triggers[1].classList.add('active');
+            if (targetId === 'ai') triggers[2].classList.add('active');
+            if (targetId === 'me') triggers[3].classList.add('active');
+            
             window.location.hash = targetId;
         }
 
@@ -249,11 +292,11 @@
                     phaseHtml += `
                         <div class="module-card" style="margin-top:15px; padding: 25px 20px; opacity: ${isDone ? '0.4' : '1'}">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <div style="flex:1;">
-                                    <div style="font-weight:900; font-size:16px; letter-spacing:1px;">${node.title}</div>
-                                    <div style="font-size:9px; color:#444; margin-top:5px; font-weight:900; letter-spacing:1px;">CYCLE: ${node.duration}</div>
+                                <div style="flex:1; cursor:pointer;" onclick="openLabWithNode('${node.title}', '${node.id}')">
+                                    <div style="font-weight:900; font-size:16px; letter-spacing:1px; color:var(--accent);">${node.title}</div>
+                                    <div style="font-size:9px; color:#444; margin-top:5px; font-weight:900; letter-spacing:1px;">TAP TO DECOMPRESS</div>
                                 </div>
-                                <button onclick="toggleNode('${node.id}', '${courseId}')" style="background:${isDone ? 'var(--accent)' : 'transparent'}; border:1px solid var(--accent); color:${isDone ? '#000' : '#fff'}; border-radius:12px; padding:8px 15px; font-size:9px; font-weight:900; cursor:pointer;">
+                                <button id="btn-${node.id}" onclick="toggleNode('${node.id}', '${courseId}')" style="background:${isDone ? 'var(--accent)' : 'transparent'}; border:1px solid var(--accent); color:${isDone ? '#000' : '#fff'}; border-radius:12px; padding:8px 15px; font-size:9px; font-weight:900; cursor:pointer;">
                                     ${isDone ? 'COMPLETED' : 'MARK'}
                                 </button>
                             </div>
@@ -265,6 +308,17 @@
             });
 
             navigate('course-view');
+        }
+
+        function openLabWithNode(title, id) {
+            navigate('ai');
+            document.getElementById('lab-node-status').innerText = `Protocol: ${title}`;
+            document.getElementById('ai-response').innerHTML = `Initializing Architect Logic for <b>${title}</b>...<br><br>Generating simplified framework and logic challenge.`;
+            
+            // This is where you would normally trigger the AI call
+            // For the UI, we show the quiz container
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('quiz-question').innerText = `What is the logic outcome of ${title}?`;
         }
 
         function toggleNode(nodeId, courseId) {
@@ -296,19 +350,20 @@
             const m = totalMinutes % 60;
             const uptime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
 
-            document.getElementById('home-progress').innerText = `${percent}%`;
-            document.getElementById('progress-fill').style.width = `${percent}%`;
-            document.getElementById('home-uptime').innerText = uptime;
+            const progText = document.getElementById('home-progress');
+            const progFill = document.getElementById('progress-fill');
+            const uptimeText = document.getElementById('home-uptime');
+
+            if(progText) progText.innerText = `${percent}%`;
+            if(progFill) progFill.style.width = `${percent}%`;
+            if(uptimeText) uptimeText.innerText = uptime;
         }
 
         window.addEventListener('load', () => {
             updateHomeStats();
             const hash = window.location.hash.replace('#', '');
             if (hash && hash !== 'course-view') {
-                const targetBtn = Array.from(document.querySelectorAll('.nav-trigger')).find(btn => 
-                    btn.getAttribute('onclick').includes(hash)
-                );
-                if (targetBtn) targetBtn.click();
+                navigate(hash);
             }
         });
     </script>
