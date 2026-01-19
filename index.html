@@ -133,6 +133,21 @@
             letter-spacing: 2px;
             text-transform: uppercase;
         }
+
+        .progress-bar-container {
+            height: 2px;
+            background: #111;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
     </style>
 </head>
 <body>
@@ -144,11 +159,14 @@
                 <h1>Hub</h1>
                 <div class="module-card">
                     <label>Current Protocol</label>
-                    <div class="data">Base_01</div>
+                    <div class="data" id="home-progress">0%</div>
+                    <div class="progress-bar-container">
+                        <div id="progress-fill"></div>
+                    </div>
                 </div>
                 <div class="module-card">
-                    <label>Uptime</label>
-                    <div class="data">00:12:45</div>
+                    <label>Uptime (Cycles)</label>
+                    <div class="data" id="home-uptime">00:00:00</div>
                 </div>
             </section>
 
@@ -157,6 +175,17 @@
                 <div class="module-card" style="padding: 10px 20px;">
                     <input type="text" placeholder="Query nodes..." style="background:transparent; border:none; color:#fff; width:100%; padding:20px; font-size:16px; outline:none;">
                 </div>
+                <div id="course-list">
+                    <div class="module-card" onclick="loadCourse('python-101')" style="cursor:pointer; border: 1px solid var(--accent);">
+                        <label>Protocol Available</label>
+                        <div class="data" style="font-size:24px;">Python Architect</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="course-view" class="view-layer">
+                <h1 id="course-title">Protocol</h1>
+                <div id="course-nodes"></div>
             </section>
 
             <section id="ai" class="view-layer">
@@ -197,6 +226,7 @@
         </nav>
     </div>
 
+    <script src="data.js"></script>
     <script>
         function navigate(targetId) {
             document.querySelectorAll('.view-layer').forEach(layer => layer.classList.remove('active'));
@@ -206,9 +236,75 @@
             window.location.hash = targetId;
         }
 
+        function loadCourse(courseId) {
+            const course = COURSE_DATA[courseId];
+            document.getElementById('course-title').innerText = course.title;
+            const container = document.getElementById('course-nodes');
+            container.innerHTML = '';
+
+            course.phases.forEach(phase => {
+                let phaseHtml = `<div style="margin-top:40px; width:100%;"><label style="color:var(--accent); font-weight:900; letter-spacing:2px; font-size:10px;">${phase.name}</label>`;
+                phase.nodes.forEach(node => {
+                    const isDone = localStorage.getItem(node.id) === 'true';
+                    phaseHtml += `
+                        <div class="module-card" style="margin-top:15px; padding: 25px 20px; opacity: ${isDone ? '0.4' : '1'}">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="flex:1;">
+                                    <div style="font-weight:900; font-size:16px; letter-spacing:1px;">${node.title}</div>
+                                    <div style="font-size:9px; color:#444; margin-top:5px; font-weight:900; letter-spacing:1px;">CYCLE: ${node.duration}</div>
+                                </div>
+                                <button onclick="toggleNode('${node.id}', '${courseId}')" style="background:${isDone ? 'var(--accent)' : 'transparent'}; border:1px solid var(--accent); color:${isDone ? '#000' : '#fff'}; border-radius:12px; padding:8px 15px; font-size:9px; font-weight:900; cursor:pointer;">
+                                    ${isDone ? 'COMPLETED' : 'MARK'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                phaseHtml += `</div>`;
+                container.innerHTML += phaseHtml;
+            });
+
+            navigate('course-view');
+        }
+
+        function toggleNode(nodeId, courseId) {
+            const status = localStorage.getItem(nodeId);
+            localStorage.setItem(nodeId, status === 'true' ? 'false' : 'true');
+            loadCourse(courseId);
+            updateHomeStats();
+        }
+
+        function updateHomeStats() {
+            let totalNodes = 0;
+            let completedNodes = 0;
+            let totalMinutes = 0;
+
+            Object.keys(COURSE_DATA).forEach(cId => {
+                COURSE_DATA[cId].phases.forEach(phase => {
+                    phase.nodes.forEach(node => {
+                        totalNodes++;
+                        if (localStorage.getItem(node.id) === 'true') {
+                            completedNodes++;
+                            totalMinutes += parseInt(node.duration) || 0;
+                        }
+                    });
+                });
+            });
+
+            const percent = totalNodes > 0 ? Math.round((completedNodes / totalNodes) * 100) : 0;
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            const uptime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
+
+            document.getElementById('home-progress').innerText = `${percent}%`;
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+            document.getElementById('home-uptime').innerText = uptime;
+        }
+
         window.addEventListener('load', () => {
+            updateHomeStats();
             const hash = window.location.hash.replace('#', '');
-            if (hash) {
+            if (hash && hash !== 'course-view') {
                 const targetBtn = Array.from(document.querySelectorAll('.nav-trigger')).find(btn => 
                     btn.getAttribute('onclick').includes(hash)
                 );
