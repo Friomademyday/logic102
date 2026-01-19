@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logic101 | Hub</title>
+    <title>Logic101 | Phantom Hub</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #050505;
@@ -13,76 +14,157 @@
             --text-main: #dcddde;
             --font: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
         }
+
         body {
             background: var(--bg);
             color: var(--text-main);
             font-family: var(--font);
             margin: 0;
-            padding: 40px 20px;
+            padding: 40px 20px 120px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
-        h1 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 30px; }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: -1px;
+            margin-bottom: 40px;
+            align-self: flex-start;
+        }
+
         .module-card {
             background: var(--phantom-card);
             border: 1px solid var(--border);
             padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            border-radius: 16px;
+            margin-bottom: 20px;
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+
         .module-card label {
             display: block;
             color: #666;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
         }
-        .module-card .data { font-size: 32px; font-weight: 800; color: #fff; }
+
+        .module-card .data {
+            font-size: 36px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        /* The 5-Icon Floating Dock */
         .nav-dock {
-            position: fixed; bottom: 30px;
-            background: rgba(10, 10, 10, 0.9);
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 15, 15, 0.85);
             backdrop-filter: blur(20px);
-            padding: 8px; border-radius: 50px;
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            border-radius: 40px;
             border: 1px solid var(--border);
-            display: flex; gap: 5px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            z-index: 9999;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
         }
-        .nav-btn {
-            padding: 10px 20px; border-radius: 40px;
-            color: #666; text-decoration: none;
-            font-weight: 700; font-size: 11px; text-transform: uppercase;
+
+        .nav-link {
+            color: #555;
+            text-decoration: none;
+            transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .nav-btn.active { background: #1a1a1a; color: var(--netflix-red); }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--netflix-red);
+            transform: translateY(-2px);
+        }
+
+        /* The Chat Icon (Middle) */
+        .nav-link.chat-main {
+            background: var(--netflix-red);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-top: -35px; /* Floats it slightly higher */
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.4);
+            border: 4px solid var(--bg);
+        }
+
+        .nav-link.chat-main:hover {
+            transform: scale(1.1) translateY(-5px);
+            color: #fff;
+        }
+
+        lucide-icon {
+            width: 22px;
+            height: 22px;
+        }
     </style>
 </head>
 <body>
+
     <h1>Phantom Hub</h1>
+
     <div class="module-card">
-        <label>Overall Mastery</label>
-        <div class="data" id="stat-progress">0%</div>
+        <label>Logic Mastery</label>
+        <div class="data" id="stat-progress">12%</div>
     </div>
+
     <div class="module-card">
-        <label>System Uptime</label>
-        <div class="data">00:24:00</div>
+        <label>Active Protocol</label>
+        <div class="data" style="font-size: 20px; color: var(--netflix-red);">Python Architect 1.0</div>
+    </div>
+
+    <div class="module-card">
+        <label>System Integrity</label>
+        <div class="data" style="font-size: 24px;">STABLE</div>
     </div>
 
     <nav class="nav-dock">
-        <a href="dashboard.html" class="nav-btn active">Hub</a>
-        <a href="courses.html" class="nav-btn">Find</a>
-        <a href="ai.html" class="nav-btn">Lab</a>
+        <a href="dashboard.html" class="nav-link active">
+            <i data-lucide="home"></i>
+        </a>
+        <a href="courses.html" class="nav-link">
+            <i data-lucide="search"></i>
+        </a>
+        <a href="ai.html" class="nav-link chat-main">
+            <i data-lucide="message-square"></i>
+        </a>
+        <a href="courses.html" class="nav-link">
+            <i data-lucide="lightbulb"></i>
+        </a>
+        <a href="menu.html" class="nav-link">
+            <i data-lucide="settings"></i>
+        </a>
     </nav>
 
     <script>
+        lucide.createIcons();
+
         function updateStats() {
             let done = 0;
             for (let i = 0; i < localStorage.length; i++) {
                 if (localStorage.getItem(localStorage.key(i)) === 'true') done++;
             }
-            document.getElementById('stat-progress').innerText = (done * 10) + "%"; 
+            document.getElementById('stat-progress').innerText = (done * 5) + "%"; 
         }
         window.onload = updateStats;
     </script>
