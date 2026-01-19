@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic101 | Menu</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --netflix-red: #e50914;
+            --border: #1a1a1a;
+            --text-main: #dcddde;
+            --font: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 30px; }
+        .menu-item {
+            width: 100%;
+            max-width: 500px;
+            background: #0f0f0f;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .menu-item:hover { border-color: var(--netflix-red); }
+        .danger-btn { color: var(--netflix-red); font-weight: 800; border-color: rgba(229, 9, 20, 0.2); }
+        .nav-dock { position: fixed; bottom: 30px; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px); padding: 8px; border-radius: 50px; border: 1px solid var(--border); display: flex; gap: 5px; }
+        .nav-btn { padding: 10px 20px; border-radius: 40px; color: #666; text-decoration: none; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <h1>System Settings</h1>
+    
+    <div class="menu-item">
+        <span>Account Profile</span>
+        <span style="color:#555">Frio Prime</span>
+    </div>
+
+    <div class="menu-item">
+        <span>API Status</span>
+        <span style="color:var(--netflix-red)">Operational</span>
+    </div>
+
+    <div class="menu-item danger-btn" onclick="resetData()">
+        <span>Reset All Progress</span>
+        <span>⚠</span>
+    </div>
+
+    <nav class="nav-dock">
+        <a href="dashboard.html" class="nav-btn">Hub</a>
+        <a href="courses.html" class="nav-btn">Find</a>
+        <a href="ai.html" class="nav-btn">Lab</a>
+    </nav>
+
+    <script>
+        function resetData() {
+            if(confirm("Confirm Logic Reset?")) {
+                localStorage.clear();
+                alert("Memory Purged.");
+                window.location.href = "dashboard.html";
+            }
+        }
+    </script>
+</body>
+</html>
