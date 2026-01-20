@@ -3,161 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logic101 | Phantom Hub</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Logic101 | Engine</title>
     <style>
         :root {
-            --bg: #000000;
-            --card-bg: #0a0a0a;
-            --netflix-red: #e50914;
+            --bg: #000;
+            --accent: #ab9ff2;
             --border: #1a1a1a;
-            --text-main: #ffffff;
-            --text-dim: #666666;
-            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
         }
 
-        body {
-            background: var(--bg);
-            color: var(--text-main);
-            font-family: var(--font);
+        body, html {
             margin: 0;
-            padding: 40px 20px 140px 20px;
+            padding: 0;
+            background: var(--bg);
+            color: #fff;
+            font-family: var(--font);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #app-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        #stage {
+            flex: 1;
+            overflow-y: auto;
+            padding: 80px 25px 140px 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        h1 {
-            font-size: 32px;
-            font-weight: 900;
+        .view-layer {
+            display: none;
             width: 100%;
-            max-width: 500px;
-            margin-bottom: 40px;
-            letter-spacing: -1px;
+            max-width: 480px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .view-layer.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 50px;
         }
 
         .module-card {
-            background: var(--card-bg);
+            background: #050505;
             border: 1px solid var(--border);
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            width: 100%;
-            max-width: 500px;
-            box-sizing: border-box;
+            padding: 40px 30px;
+            border-radius: 40px;
+            margin-bottom: 20px;
         }
 
         .module-card label {
             display: block;
-            color: var(--text-dim);
+            color: #444;
             font-size: 10px;
-            font-weight: 800;
+            font-weight: 900;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
             margin-bottom: 15px;
         }
 
         .module-card .data {
-            font-size: 42px;
+            font-size: 40px;
             font-weight: 900;
+            color: var(--accent);
         }
 
-        .protocol-text {
-            color: var(--netflix-red);
-            font-size: 26px !important;
-        }
-
-        .status-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .glow-dot {
-            width: 10px;
-            height: 10px;
-            background: #00ff88;
-            border-radius: 50%;
-            box-shadow: 0 0 12px #00ff88;
-        }
-
-        /* The 5-Icon Floating Dock from Image 1 */
-        .nav-dock {
+        .nav-bar {
             position: fixed;
-            bottom: 40px;
-            background: #0a0a0a;
-            border: 1px solid var(--border);
-            padding: 10px 25px;
-            border-radius: 100px;
+            bottom: 0;
+            width: 100%;
+            height: 95px;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
             display: flex;
+            justify-content: space-around;
             align-items: center;
-            gap: 25px;
-            z-index: 1000;
+            padding-bottom: 25px;
         }
 
-        .nav-link {
-            color: var(--text-main);
-            text-decoration: none;
+        .nav-trigger {
+            background: none;
+            border: none;
+            color: #444;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
         }
 
-        .nav-link.chat-main {
-            background: var(--netflix-red);
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            border: 4px solid var(--bg);
-            margin-top: -45px;
-            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3);
+        .nav-trigger.active {
+            color: var(--accent);
         }
 
-        lucide-icon {
+        .nav-trigger svg {
             width: 24px;
             height: 24px;
+            margin-bottom: 6px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .nav-label {
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .progress-bar-container {
+            height: 2px;
+            background: #111;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        input[type="text"] {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            color: #fff;
+            border-radius: 15px;
+            padding: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+            font-family: var(--font);
+        }
+
+        .ai-chat-bubble {
+            padding: 20px;
+            line-height: 1.6;
+            font-size: 15px;
+            color: #ccc;
+            white-space: pre-wrap;
+        }
+
+        code {
+            display: block;
+            background: #111;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            color: var(--accent);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+        }
+
+        .run-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <h1>Phantom Hub</h1>
+    <div id="app-shell">
+        <main id="stage">
+            
+            <section id="home" class="view-layer active">
+                <h1>Hub</h1>
+                <div class="module-card">
+                    <label>Current Protocol</label>
+                    <div class="data" id="home-progress">0%</div>
+                    <div class="progress-bar-container">
+                        <div id="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="module-card">
+                    <label>Uptime (Cycles)</label>
+                    <div class="data" id="home-uptime">00:00:00</div>
+                </div>
+            </section>
 
-    <div class="module-card">
-        <label>Logic Mastery</label>
-        <div class="data" id="stat-progress">0%</div>
+            <section id="search" class="view-layer">
+                <h1>Find</h1>
+                <div class="module-card" style="padding: 10px 20px;">
+                    <input type="text" placeholder="Query nodes..." style="background:transparent; border:none; color:#fff; width:100%; padding:20px; font-size:16px; outline:none;">
+                </div>
+                <div id="course-list">
+                    <div class="module-card" onclick="loadCourse('python-101')" style="cursor:pointer; border: 1px solid var(--accent);">
+                        <label>Protocol Available</label>
+                        <div class="data" style="font-size:24px;">Python Architect</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="course-view" class="view-layer">
+                <h1 id="course-title">Protocol</h1>
+                <div id="course-nodes"></div>
+            </section>
+
+            <section id="ai" class="view-layer">
+                <h1>Lab</h1>
+                <div class="module-card">
+                    <label id="lab-node-status">System: Idle</label>
+                    <div id="ai-response" class="ai-chat-bubble">Awaiting logic input...</div>
+                </div>
+                <div id="quiz-container" style="display:none; width: 100%;">
+                    <div class="module-card">
+                        <label>Logic Check</label>
+                        <div id="quiz-question" style="margin-bottom: 20px; color:#fff;"></div>
+                        <input type="text" id="quiz-input" placeholder="Enter logic output..." onkeydown="if(event.key === 'Enter') runLabLogic()">
+                        <button class="run-btn" onclick="runLabLogic()">RUN_LOGIC</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="me" class="view-layer">
+                <h1>Self</h1>
+                <div class="module-card">
+                    <label>Identity</label>
+                    <div class="data" style="font-size: 24px;">ARCHITECT_FRIO</div>
+                </div>
+            </section>
+
+        </main>
+
+        <nav class="nav-bar">
+            <button class="nav-trigger active" onclick="navigate('home')">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-trigger" onclick="navigate('search')">
+                <svg viewBox="0 0 24 24" style="transform: rotate(10deg);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span class="nav-label">Search</span>
+            </button>
+            <button class="nav-trigger" onclick="navigate('ai')">
+                <svg viewBox="0 0 24 24"><path d="M9 21h6"></path><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2v1"></path><path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>
+                <span class="nav-label">Lab</span>
+            </button>
+            <button class="nav-trigger" onclick="navigate('me')">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span class="nav-label">Me</span>
+            </button>
+        </nav>
     </div>
-
-    <div class="module-card">
-        <label>Active Protocol</label>
-        <div class="data protocol-text">Python Architect 1.0</div>
-    </div>
-
-    <div class="module-card">
-        <label>System Integrity</label>
-        <div class="data status-container">
-            <div class="glow-dot"></div> STABLE
-        </div>
-    </div>
-
-    <nav class="nav-dock">
-        <a href="dashboard.html" class="nav-link"><i data-lucide="home"></i></a>
-        <a href="courses.html" class="nav-link"><i data-lucide="search"></i></a>
-        <a href="ai.html" class="nav-link chat-main"><i data-lucide="message-square"></i></a>
-        <a href="courses.html" class="nav-link"><i data-lucide="lightbulb"></i></a>
-        <a href="menu.html" class="nav-link"><i data-lucide="settings"></i></a>
-    </nav>
 
     <script>
-        lucide.createIcons();
-        function updateStats() {
-            let done = 0;
-            for (let i = 0; i < localStorage.length; i++) {
-                if (localStorage.getItem(localStorage.key(i)) === 'true') done++;
+        const API_KEY = "AIzaSyBFpT7_kIGrlCDWfSaXNkPUlBohNrfcrYg";
+
+        const COURSE_DATA = {
+            "python-101": {
+                title: "Python Architect",
+                phases: [
+                    {
+                        name: "Foundation",
+                        nodes: [
+                            { id: "p1", title: "Variables & Types", duration: "10" },
+                            { id: "p2", title: "Logic Gates", duration: "15" },
+                            { id: "p3", title: "Array Structures", duration: "20" }
+                        ]
+                    }
+                ]
             }
-            document.getElementById('stat-progress').innerText = (done * 10) + "%"; 
+        };
+
+        let currentActiveNode = null;
+        let currentCourseId = "python-101";
+
+        function navigate(targetId) {
+            document.querySelectorAll('.view-layer').forEach(layer => layer.classList.remove('active'));
+            document.querySelectorAll('.nav-trigger').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+            
+            const triggers = document.querySelectorAll('.nav-trigger');
+            if (targetId === 'home') triggers[0].classList.add('active');
+            if (targetId === 'search') triggers[1].classList.add('active');
+            if (targetId === 'ai') triggers[2].classList.add('active');
+            if (targetId === 'me') triggers[3].classList.add('active');
+            
+            window.location.hash = targetId;
         }
-        window.onload = updateStats;
+
+        function loadCourse(courseId) {
+            const course = COURSE_DATA[courseId];
+            currentCourseId = courseId;
+            document.getElementById('course-title').innerText = course.title;
+            const container = document.getElementById('course-nodes');
+            container.innerHTML = '';
+
+            course.phases.forEach(phase => {
+                let phaseHtml = `<div style="margin-top:40px; width:100%;"><label style="color:var(--accent); font-weight:900; letter-spacing:2px; font-size:10px;">${phase.name}</label>`;
+                phase.nodes.forEach(node => {
+                    const isDone = localStorage.getItem(node.id) === 'true';
+                    phaseHtml += `
+                        <div class="module-card" style="margin-top:15px; padding: 25px 20px; opacity: ${isDone ? '0.4' : '1'}">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="flex:1; cursor:pointer;" onclick="openLabWithNode('${node.title}', '${node.id}')">
+                                    <div style="font-weight:900; font-size:16px; letter-spacing:1px; color:var(--accent);">${node.title}</div>
+                                    <div style="font-size:9px; color:#444; margin-top:5px; font-weight:900; letter-spacing:1px;">TAP TO DECOMPRESS</div>
+                                </div>
+                                <button id="btn-${node.id}" onclick="toggleNode('${node.id}', '${courseId}')" style="background:${isDone ? 'var(--accent)' : 'transparent'}; border:1px solid var(--accent); color:${isDone ? '#000' : '#fff'}; border-radius:12px; padding:8px 15px; font-size:9px; font-weight:900; cursor:pointer;">
+                                    ${isDone ? 'COMPLETED' : 'MARK'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                phaseHtml += `</div>`;
+                container.innerHTML += phaseHtml;
+            });
+
+            navigate('course-view');
+        }
+
+        async function openLabWithNode(title, id) {
+            currentActiveNode = id;
+            navigate('ai');
+            document.getElementById('lab-node-status').innerText = `Protocol: ${title}`;
+            document.getElementById('ai-response').innerText = `Architecting logic for ${title}...`;
+            document.getElementById('quiz-container').style.display = 'none';
+
+            const prompt = `Explain ${title} in 2 sentences. Then provide a short Python code example. Finally, ask one quiz question about it.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+                const data = await response.json();
+                const text = data.candidates[0].content.parts[0].text;
+                
+                document.getElementById('ai-response').innerHTML = text.replace(/```([\s\S]*?)```/g, '<code>$1</code>');
+                document.getElementById('quiz-container').style.display = 'block';
+                document.getElementById('quiz-question').innerText = "Check the response above for your logic challenge.";
+            } catch (e) {
+                document.getElementById('ai-response').innerText = "CORE_ERROR: Connection failed.";
+            }
+        }
+
+        async function runLabLogic() {
+            const input = document.getElementById('quiz-input').value;
+            if(!input) return;
+
+            document.getElementById('ai-response').innerText = "Validating logic...";
+            
+            const prompt = `The user answered "${input}" to the previous quiz. If it is correct, start your reply with "LOGIC_VALIDATED". Otherwise explain why.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+                const data = await response.json();
+                const text = data.candidates[0].content.parts[0].text;
+                
+                document.getElementById('ai-response').innerText = text;
+
+                if (text.includes("LOGIC_VALIDATED")) {
+                    localStorage.setItem(currentActiveNode, 'true');
+                    updateHomeStats();
+                    setTimeout(() => {
+                        alert("NODE_COMPLETE: Progress Synced.");
+                        loadCourse(currentCourseId);
+                    }, 1000);
+                }
+            } catch (e) {
+                document.getElementById('ai-response').innerText = "Validation failed.";
+            }
+        }
+
+        function toggleNode(nodeId, courseId) {
+            const status = localStorage.getItem(nodeId);
+            localStorage.setItem(nodeId, status === 'true' ? 'false' : 'true');
+            loadCourse(courseId);
+            updateHomeStats();
+        }
+
+        function updateHomeStats() {
+            let totalNodes = 0;
+            let completedNodes = 0;
+            let totalMinutes = 0;
+
+            Object.keys(COURSE_DATA).forEach(cId => {
+                COURSE_DATA[cId].phases.forEach(phase => {
+                    phase.nodes.forEach(node => {
+                        totalNodes++;
+                        if (localStorage.getItem(node.id) === 'true') {
+                            completedNodes++;
+                            totalMinutes += parseInt(node.duration) || 0;
+                        }
+                    });
+                });
+            });
+
+            const percent = totalNodes > 0 ? Math.round((completedNodes / totalNodes) * 100) : 0;
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            const uptime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
+
+            const progText = document.getElementById('home-progress');
+            const progFill = document.getElementById('progress-fill');
+            const uptimeText = document.getElementById('home-uptime');
+
+            if(progText) progText.innerText = `${percent}%`;
+            if(progFill) progFill.style.width = `${percent}%`;
+            if(uptimeText) uptimeText.innerText = uptime;
+        }
+
+        window.addEventListener('load', () => {
+            updateHomeStats();
+        });
     </script>
+
 </body>
 </html>
